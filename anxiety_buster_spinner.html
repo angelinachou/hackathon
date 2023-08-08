@@ -1,0 +1,105 @@
+function(instance, context) {
+
+    
+	const canvas = document.createElement("canvas");
+    canvas.id = "my-canvas"
+    instance.canvas.append(canvas)
+  	instance.data.pause = 0
+    
+   	
+	minl = Math.min(instance.canvas.width(), instance.canvas.height())
+    canvas.width = minl
+    canvas.height = minl
+    
+
+    
+    //converts degrees to radians so i dont burst into tears whenever i use an angle
+	const degToRad = (d) => {
+  		return d * Math.PI / 180;
+	};
+
+    //variables for main circle + ctx
+    const x = instance.canvas.width() / 2;
+    const y = instance.canvas.height() / 2;
+    const r = (canvas.width / 3);
+    const ctx = canvas.getContext("2d");
+
+    //make main circle
+    const dc = () => {
+      ctx.beginPath();
+      ctx.fillStyle = "#9bc1de";
+      ctx.arc(x, y, r, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.closePath();
+    }
+
+    //function for filling in circle
+    let startAngle = 270;
+    let endAngle = 270;
+    let t = ["Breathe In", "Hold Breath", "Breathe Out", "Hold Breath"];
+    let color = ["#84a4bd", "#ab9bde", "#84bd9e", "#ab9bde"];
+    let inc = 2;
+    let tIndex = 0;
+    let cycle = 0;
+
+    
+    
+    //add to the arc every second
+    const timer = () => {
+      if (cycle % 2 == 0) {
+        endAngle += inc;
+      } else {
+        startAngle += inc;
+      }
+    }
+
+    const drawRing = () => {
+      ctx.beginPath();
+      ctx.strokeStyle = color[tIndex];
+      ctx.lineWidth = 16;
+      ctx.arc(x, y, r+8, degToRad(startAngle), degToRad(endAngle));
+      ctx.stroke();
+    }  
+
+    const text = () => {
+      ctx.fillStyle = "black";
+      ctx.font = "bold 20px Times New Roman";
+
+      let thisX = 50;
+
+      if (tIndex % 2 != 0) {
+        thisX = 52;
+      } else if (tIndex == 2) {
+        thisX = 50;
+      }
+      ctx.textAlign = "center";
+      ctx.fillText(t[tIndex], x, y);
+    }
+
+
+    const draw = () => {
+      if (instance.data.pause == 0) {
+		ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      	timer();
+      	dc();
+      	drawRing();
+      	text();
+
+      	if (endAngle == 630 || startAngle == 630) {
+        	//if 4 seconds, change text
+            cycle++;
+            tIndex++;
+            if (tIndex >= 4) {
+              tIndex = 0;
+            }
+            startAngle = 270
+            endAngle = 270;
+      	}
+
+
+      }
+      requestAnimationFrame(draw);
+    }
+    draw();
+}
