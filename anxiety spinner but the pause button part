@@ -1,0 +1,10 @@
+function(instance, properties, context) {
+
+	if (instance.data.pause == 0) {
+        instance.data.pause = 1
+    } else {
+        instance.data.pause = 0
+    }
+    
+    
+}
